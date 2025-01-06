@@ -1,21 +1,12 @@
 local M = {}
 
-local default_keymaps = {
-    surround_selection = "<leader>s",
-    surround_word = "<leader>sw",
-    remove_or_change_surround_word = "<leader>sr",
-}
-
-function M.setup(opts)
-    opts = opts or {}
-    local keymaps = vim.tbl_extend("force", default_keymaps, opts.keymaps or {})
-
-    vim.keymap.set("v", keymaps.surround_selection, function()
+M.setup_keymaps = function()
+    vim.keymap.set("v", "<leader>s", function()
         local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
         require("simple-surr.surround").surround_selection(style)
     end, { desc = "Surround selection with custom or predefined style" })
 
-    vim.keymap.set("n", keymaps.surround_word, function()
+    vim.keymap.set("n", "<leader>sw", function()
         local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
         require("simple-surr.surround").surround_word(style)
     end, { desc = "Surround word under cursor with custom or predefined style" })

@@ -12,9 +12,27 @@ M.surround_pairs = {
     [">"] = { "<", ">" },
     ["<"] = { "<", ">" },
     ["`"] = { "`", "`" },
+    ["|"] = { "|", "|" },
 }
 
-local function parse_surround_style(style, add_space)
+function M.add_surround_pair(opening, closing)
+    if #opening ~= 1 or #closing ~= 1 then
+        print("Surround characters must be single characters.")
+        return
+    end
+
+    for key, pair in pairs(M.surround_pairs) do
+        if (key == opening and pair[2] == closing) or (pair[1] == opening and pair[2] == closing) then
+            print("This surround pair already exists: " .. opening .. closing)
+            return
+        end
+    end
+
+    M.surround_pairs[opening] = { opening, closing }
+    print("Added surround pair: " .. opening .. closing)
+end
+
+local function parse_surround_style(style)
     local opening, closing
     if M.surround_pairs[style] then
         opening, closing = M.surround_pairs[style][1], M.surround_pairs[style][2]
@@ -26,17 +44,11 @@ local function parse_surround_style(style, add_space)
         print("Invalid surround style! Use a listed key or one/two custom characters.")
         return nil, nil
     end
-
-    if add_space then
-        opening = opening .. " "
-        closing = " " .. closing
-    end
-
     return opening, closing
 end
 
-function M.surround_selection(style, add_space)
-    local opening, closing = parse_surround_style(style, add_space)
+function M.surround_selection(style)
+    local opening, closing = parse_surround_style(style)
     if not opening or not closing then
         return
     end
@@ -71,8 +83,8 @@ function M.surround_selection(style, add_space)
     end
 end
 
-function M.surround_word(style, add_space)
-    local opening, closing = parse_surround_style(style, add_space)
+function M.surround_word(style)
+    local opening, closing = parse_surround_style(style)
     if not opening or not closing then
         return
     end
@@ -90,37 +102,95 @@ function M.surround_word(style, add_space)
     end
 end
 
-function M.change_surround_word(style, add_space)
-    local opening, closing = parse_surround_style(style, add_space)
+function M.remove_or_change_surround_word(change)
+    local word = vim.fn.expand("<cword>")
+    local col_start = vim.fn.col(".")
+    local current_line = vim.fn.getline(".")
+
+    local updated_line = current_line:gsub(
+        "([%(%)%{%}%[%]%\"'`<>,])%s*" .. vim.pesc(word) .. "%s*([%(%)%{%}%[%]%\"'`<>,])",
+        function(opening, closing)
+            if change then
+                local new_opening, new_closing = parse_surround_style(change)
+                return new_opening .. word .. new_closing
+            else
+                return word
+            end
+        end,
+        1
+    )
+
+    if current_line ~= updated_line then
+        vim.api.nvim_set_current_line(updated_line)
+        vim.fn.cursor(0, col_start)
+    else
+        print("No surround characters found!")
+    end
+end
+
+function M.toggle_or_change_surround_selection(style)
+    local opening, closing = parse_surround_style(style)
     if not opening or not closing then
         return
     end
 
-    local word = vim.fn.expand("<cword>")
-    local col_start = vim.fn.col(".")
-    local new_word = opening .. word .. closing
+    local start_pos = vim.fn.getpos("v")
+    local end_pos = vim.fn.getpos(".")
+    local start_line = start_pos[2]
+    local end_line = end_pos[2]
 
-    local current_line = vim.fn.getline(".")
-    local updated_line = current_line:gsub(word, new_word, 1)
+    -- first line
+    local start_line_text = vim.fn.getline(start_line)
+    local end_line_text = vim.fn.getline(end_line)
+    local first_char = start_line_text:sub(start_pos[3], start_pos[3])
+    local last_char = end_line_text:sub(end_pos[3], end_pos[3])
 
-    if current_line ~= updated_line then
-        vim.api.nvim_set_current_line(updated_line)
-        vim.fn.cursor(0, col_start + #opening)
+    if not M.surround_pairs[first_char] or M.surround_pairs[first_char][2] ~= last_char then
+        print("Error: Selected text is not surrounded by a valid pair!")
+        return
     end
-end
 
-function M.setup()
-    vim.keymap.set("v", "<leader>s", function()
-        local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
-        local add_space = vim.fn.input("Add spaces inside? (y/n): ") == "y"
-        require("simple-surr.surround").surround_selection(style, add_space)
-    end, { desc = "Surround selection with custom or predefined style" })
+    if start_line == end_line then
+        local selected = start_line_text:sub(start_pos[3], end_pos[3] - 1)
+        local edited = selected
+        local front = start_line_text:sub(1, start_pos[3] - 1)
+        local after = start_line_text:sub(end_pos[3] + 1)
+        if style == "" then
+            edited = string.sub(selected, 2, -2)
+        else
+            edited = opening .. string.sub(selected, 2, -2) .. closing
+        end
+        start_line_text = front .. edited .. after
+        vim.fn.setline(start_line, start_line_text)
+        vim.fn.setpos(".", { start_pos[1], start_pos[2], start_pos[3] + #opening, 0 })
+        vim.cmd("normal! gv")
+    else
+        local first_line = vim.fn.getline(start_line)
+        local front = first_line:sub(1, start_pos[3] - 1)
+        local first_selected = first_line:sub(start_pos[3])
+        local first_edited = ""
+        if style == "" then
+            first_edited = string.sub(first_selected, 2, -1)
+        else
+            first_edited = opening .. string.sub(first_selected, 2, -1)
+        end
+        first_line = front .. first_edited
+        vim.fn.setline(start_line, first_line)
 
-    vim.keymap.set("n", "<leader>sw", function()
-        local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
-        local add_space = vim.fn.input("Add spaces inside? (y/n): ") == "y"
-        require("simple-surr.surround").surround_word(style, add_space)
-    end, { desc = "Surround word under cursor with custom or predefined style" })
+        local last_line = vim.fn.getline(end_line)
+        local selected_end = last_line:sub(1, end_pos[3])
+        local last_edited = ""
+        if style == "" then
+            last_edited = string.sub(selected_end, 1, -2)
+        else
+            last_edited = string.sub(selected_end, 1, -2) .. closing
+        end
+        local after = last_line:sub(end_pos[3] + 1)
+        last_line = last_edited .. after
+        vim.fn.setline(end_line, last_line)
+
+        vim.cmd("normal! gv")
+    end
 end
 
 return M
