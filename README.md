@@ -21,7 +21,7 @@ To install this plugin using [packer.nvim](https://github.com/wbthomason/packer.
 
 ```lua
 use {
-    'kunkka19xx/simple-surround',
+    'kunkka19xx/simple-surr',
     config = function()
         require('simple-surr').setup {
             keymaps = {
@@ -39,7 +39,7 @@ use {
 
 ```lua
 return {
-    'kunkka19xx/simple-surround',
+    'kunkka19xx/simple-surr',
     config = function()
         require("simple-surr").setup {
             keymaps = {
