@@ -90,6 +90,25 @@ function M.surround_word(style, add_space)
     end
 end
 
+function M.change_surround_word(style, add_space)
+    local opening, closing = parse_surround_style(style, add_space)
+    if not opening or not closing then
+        return
+    end
+
+    local word = vim.fn.expand("<cword>")
+    local col_start = vim.fn.col(".")
+    local new_word = opening .. word .. closing
+
+    local current_line = vim.fn.getline(".")
+    local updated_line = current_line:gsub(word, new_word, 1)
+
+    if current_line ~= updated_line then
+        vim.api.nvim_set_current_line(updated_line)
+        vim.fn.cursor(0, col_start + #opening)
+    end
+end
+
 function M.setup()
     vim.keymap.set("v", "<leader>s", function()
         local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
