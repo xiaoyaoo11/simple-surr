@@ -1,6 +1,8 @@
 # Simple Surround Plugin
 
 This Neovim plugin provides a simple way to surround selected text or the word under the cursor with custom or predefined styles. It also includes functionality to remove or change surrounding characters.
+But it is just fit with my needs (simple), if you find alternative to it, please use.
+(I will add more functions that I think I need to use while surrounding text. Such as: surround a line, selected text after spliting by specified character, for instance: ",")
 
 ## Features
 
