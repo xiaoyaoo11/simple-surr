@@ -60,7 +60,7 @@ function M.surround_selection(style)
     if start_line == end_line then
         local line = vim.fn.getline(start_line)
         local front = line:sub(1, start_pos[3] - 1)
-        local selected = line:sub(start_pos[3], end_pos[3] - 1)
+        local selected = line:sub(start_pos[3], end_pos[3])
         local after = line:sub(end_pos[3] + 1)
 
         line = front .. opening .. selected .. closing .. after
@@ -139,7 +139,6 @@ function M.toggle_or_change_surround_selection(style)
     local start_line = start_pos[2]
     local end_line = end_pos[2]
 
-    -- first line
     local start_line_text = vim.fn.getline(start_line)
     local end_line_text = vim.fn.getline(end_line)
     local first_char = start_line_text:sub(start_pos[3], start_pos[3])
@@ -151,7 +150,7 @@ function M.toggle_or_change_surround_selection(style)
     end
 
     if start_line == end_line then
-        local selected = start_line_text:sub(start_pos[3], end_pos[3] - 1)
+        local selected = start_line_text:sub(start_pos[3], end_pos[3])
         local edited = selected
         local front = start_line_text:sub(1, start_pos[3] - 1)
         local after = start_line_text:sub(end_pos[3] + 1)
