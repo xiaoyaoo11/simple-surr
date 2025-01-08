@@ -40,7 +40,7 @@ local function parse_surround_style(style)
 		opening, closing = style, style
 	elseif #style == 2 then
 		opening, closing = style:sub(1, 1), style:sub(2, 2)
-	elseif #style == "" then
+	elseif style == "" then
 		return nil, nil
 	else
 		print("Invalid surround style! Use a listed key or one/two custom characters.")
