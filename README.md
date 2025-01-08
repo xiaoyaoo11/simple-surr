@@ -8,12 +8,12 @@ But it is just fit with my needs (simple), if you find alternative to it, please
 
 - Surround selected text or the word under the cursor with various styles such as `()`, `{}`, `[]`, `""`, `''`, and more.
 - Supports custom styles with one or two characters.
-- Option to add spaces inside the surrounding characters.
 - Remove or change the existing surrounding style.
 - Toggle surround for selections.
 - Fully customizable keymaps.
 
 ## DEMO
+(TODO)
 
 ## Installation
 
