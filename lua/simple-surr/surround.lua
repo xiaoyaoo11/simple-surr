@@ -40,6 +40,8 @@ local function parse_surround_style(style)
 		opening, closing = style, style
 	elseif #style == 2 then
 		opening, closing = style:sub(1, 1), style:sub(2, 2)
+	elseif style == "" then
+		return nil, nil
 	else
 		print("Invalid surround style! Use a listed key or one/two custom characters.")
 		return nil, nil
@@ -155,10 +157,12 @@ function M.toggle_or_change_surround_selection(style)
 		local edited = selected
 		local front = start_line_text:sub(1, start_pos[3] - 1)
 		local after = start_line_text:sub(end_pos[3] + 1)
-		if style == "" then
-			edited = string.sub(selected, 2, -2)
-		else
-			edited = opening .. string.sub(selected, 2, -2) .. closing
+		if not opening or not closing then
+			if style == "" then
+				edited = string.sub(selected, 2, -2)
+			else
+				edited = opening .. string.sub(selected, 2, -2) .. closing
+			end
 		end
 		start_line_text = front .. edited .. after
 		vim.fn.setline(start_line, start_line_text)
@@ -169,10 +173,12 @@ function M.toggle_or_change_surround_selection(style)
 		local front = first_line:sub(1, start_pos[3] - 1)
 		local first_selected = first_line:sub(start_pos[3])
 		local first_edited = ""
-		if style == "" then
-			first_edited = string.sub(first_selected, 2, -1)
-		else
-			first_edited = opening .. string.sub(first_selected, 2, -1)
+		if not opening or not closing then
+			if style == "" then
+				first_edited = string.sub(first_selected, 2, -1)
+			else
+				first_edited = opening .. string.sub(first_selected, 2, -1)
+			end
 		end
 		first_line = front .. first_edited
 		vim.fn.setline(start_line, first_line)
@@ -180,10 +186,12 @@ function M.toggle_or_change_surround_selection(style)
 		local last_line = vim.fn.getline(end_line)
 		local selected_end = last_line:sub(1, end_pos[3])
 		local last_edited = ""
-		if style == "" then
-			last_edited = string.sub(selected_end, 1, -2)
-		else
-			last_edited = string.sub(selected_end, 1, -2) .. closing
+		if not opening or not closing then
+			if style == "" then
+				last_edited = string.sub(selected_end, 1, -2)
+			else
+				last_edited = string.sub(selected_end, 1, -2) .. closing
+			end
 		end
 		local after = last_line:sub(end_pos[3] + 1)
 		last_line = last_edited .. after
