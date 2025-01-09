@@ -13,6 +13,7 @@ But it is just fit with my needs (simple), if you find alternative to it, please
 - Fully customizable keymaps.
 
 ## DEMO
+
 (TODO)
 
 ## Installation
@@ -105,18 +106,18 @@ If no configuration is provided, the plugin will use the default keymaps:
 
 ## Customization
 
-You can customize the predefined surround pairs by editing the `surround_pairs` table in the plugin's code:
+You can customize the predefined surround pairs through setup function:
 
 ```lua
-M.surround_pairs = {
-    ["("] = { "(", ")" },
-    ["{"] = { "{", "}" },
-    ["["] = { "[", "]" },
-    ["'"] = { "'", "'" },
-    ["\""] = { '"', '"' },
-    [">"] = { "<", ">" },
-    ["`"] = { "`", "`" },
-}
+require("simple-surr").setup({
+    custom_surround_pairs = {
+        ["|"] = {"|", "|"},  -- Custom surround pair
+        ["$"] = {"$", "$"},  -- Custom surround pair
+        ["b"] = {"{", ")"},  -- Custom surround pair
+    },
+    -- if you want append pairs, not overwirte, please don't set *overwrite_default_pairs* value
+    overwrite_default_pairs = true,  -- Overwrite the default surround pairs
+})
 ```
 
 ## License
