@@ -2,8 +2,8 @@ local M = {}
 
 local default_keymaps = {
 	surround_selection = "<leader>s",
-	surround_word = "<leader>sw",
-	remove_or_change_surround_word = "<leader>sr",
+	surround_word = "<leader>sr",
+	remove_or_change_surround_word = "<leader>sa",
 	toggle_or_change_surround_selection = "<leader>ts",
 }
 
