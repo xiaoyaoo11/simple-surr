@@ -20,10 +20,18 @@ But it is just fit with my needs (simple), if you find alternative to it, please
 
 ```lua
 return {
-    'kunkka19xx/simple-surr',
-    config = function()
-        require("simple-surr").setup {}
-    end,
+   "xiaoyaoo11/simple-surr",
+   lazy = false,
+   config = function()
+      require("simple-surr").setup {
+         keymaps = {
+            surround_selection = "<leader>ss", -- Keymap for surrounding selection
+            surround_word = "<leader>sw", -- Keymap for surrounding word
+            remove_or_change_surround_word = "<leader>sr", -- Keymap for removing/changing surrounding word
+            toggle_or_change_surround_selection = "<leader>ts", -- Keymap for removing/changing surrounding selected text
+         },
+      }
+   end,
 }
 ```
 
@@ -36,7 +44,9 @@ require('simple-surr').setup {
     keymaps = {
         surround_selection = "<leader>ss",       -- Keymap for surrounding selection
         surround_word = "<leader>sr",          -- Keymap for surrounding word
-        remove_or_change_surround_word = "<leader>sc" -- Keymap for removing/changing surrounding word
+        remove_or_change_surround_word = "<leader>sr" -- Keymap for removing/changing surrounding word
+        toggle_or_change_surround_selection = "<leader>ts", -- Keymap for removing/changing surrounding selected text
+
     }
 }
 ```
@@ -44,8 +54,8 @@ require('simple-surr').setup {
 If no configuration is provided, the plugin will use the default keymaps:
 
 - `<leader>ss`: Surround selected text.
-- `<leader>sr`: Surround the word under the cursor.
-- `<leader>sc`: Remove or change the surrounding style of a word.
+- `<leader>sw`: Surround the word under the cursor.
+- `<leader>sr`: Remove or change the surrounding style of a word.
 
 ## Usage
 
@@ -66,7 +76,7 @@ If no configuration is provided, the plugin will use the default keymaps:
 ### Remove or Change Surround Style
 
 1. Place the cursor on the word you want to modify.
-2. Press `<leader>sc` (or your configured keymap).
+2. Press `<leader>sr` (or your configured keymap).
 3. Enter the new surround style or leave it blank to remove the existing surrounding characters.
 
 ### Toggle Surround for Selection

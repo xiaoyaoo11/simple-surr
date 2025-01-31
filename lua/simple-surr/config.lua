@@ -1,7 +1,7 @@
 local M = {}
 
 M.setup_keymaps = function()
-	vim.keymap.set("v", "<leader>sv", function()
+	vim.keymap.set("v", "<leader>ss", function()
 		local style = vim.fn.input("Enter surround style (e.g., [, {, (, }, ', \", `, custom): ")
 		require("simple-surr.surround").surround_selection(style)
 	end, { desc = "Surround selection with custom or predefined style" })
